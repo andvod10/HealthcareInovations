@@ -1,7 +1,7 @@
 services:
   #PostgreSQL Database for the application
   tick_tick_boom-postgres:
-    image: "postgres:latest"
+    image: "postgres:13.9-alpine"
     container_name: hr-postgres
     #    #Volume mounted for database for the storage
     volumes:

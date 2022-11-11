@@ -1,3 +1,3 @@
 #!/bin/bash
 
-liquibase --diffTypes="data" generateChangeLog
+liquibase --diffTypes="data" generate-changeLog
