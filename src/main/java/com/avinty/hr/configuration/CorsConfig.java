@@ -12,7 +12,7 @@ import java.util.Collections;
 
 @Configuration
 public class CorsConfig {
-//    @Bean
+    @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
@@ -24,7 +24,7 @@ public class CorsConfig {
         return new CorsFilter(source);
     }
 
-//    @Bean
+    @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
