@@ -11,6 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface EmployeeRepository extends CrudRepository<Employee, String> {
+    Optional<Employee> findByEmailIgnoreCase(String email);
+
     @Override
     @Query(
             "select e from Employee e " +

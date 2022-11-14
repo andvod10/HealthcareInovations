@@ -3,12 +3,13 @@ package com.avinty.hr.service.employees;
 import com.avinty.hr.presentation.dto.RqChangeDepartment;
 import com.avinty.hr.presentation.dto.RqEmployee;
 import com.avinty.hr.presentation.dto.RsEmployee;
+import com.avinty.hr.presentation.dto.RsEmployeeInfo;
 
 import java.util.List;
 
 public interface EmployeesService {
     List<RsEmployee> getEmployees();
-    String addAdminEmployee(RqEmployee rqEmployee);
-    String addEmployee(RqEmployee rqEmployee);
+    RsEmployeeInfo addAdminEmployee(RqEmployee rqEmployee);
+    RsEmployeeInfo addEmployee(RqEmployee rqEmployee);
     void changeDepartment(RqChangeDepartment rqChangeDepartment);
 }

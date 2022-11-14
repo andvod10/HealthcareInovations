@@ -4,6 +4,7 @@ import com.avinty.hr.presentation.APIVersions;
 import com.avinty.hr.presentation.dto.RqChangeDepartment;
 import com.avinty.hr.presentation.dto.RqEmployee;
 import com.avinty.hr.presentation.dto.RsEmployee;
+import com.avinty.hr.presentation.dto.RsEmployeeInfo;
 import com.avinty.hr.service.employees.EmployeesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,13 +26,13 @@ public class EmployeesController {
         this.employeesService = employeesService;
     }
 
-    @PostMapping()
-    String addEmployee(@RequestBody RqEmployee rqEmployee) {
+    @PostMapping("employee")
+    RsEmployeeInfo addEmployee(@RequestBody RqEmployee rqEmployee) {
         return this.employeesService.addEmployee(rqEmployee);
     }
 
     @PostMapping("admin")
-    String addAdminEmployee(@RequestBody RqEmployee rqEmployee) {
+    RsEmployeeInfo addAdminEmployee(@RequestBody RqEmployee rqEmployee) {
         return this.employeesService.addAdminEmployee(rqEmployee);
     }
 

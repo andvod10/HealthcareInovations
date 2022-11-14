@@ -1,5 +1,6 @@
 package com.avinty.hr.data.mapper;
 
+import com.avinty.hr.data.entity.AccountRoles;
 import com.avinty.hr.data.entity.Department;
 import com.avinty.hr.data.entity.Employee;
 import com.avinty.hr.presentation.dto.RqEditEmployee;
@@ -11,7 +12,18 @@ import java.time.LocalDateTime;
 import static com.avinty.hr.service.employees.CustomDateTimeFormatter.formatDateTime;
 
 public class EmployeeMapper {
-    public static Employee toSaveEntity(RqEmployee rqEmployee, String password, Employee createdBy, Department department) {
+    public static Employee toSaveAdminEntity(RqEmployee rqEmployee, String password) {
+        LocalDateTime createdAt = LocalDateTime.now();
+        return Employee.builder()
+                .createdAt(createdAt)
+                .email(rqEmployee.getEmail())
+                .password(password)
+                .fullName(rqEmployee.getFullName())
+                .accountRole(AccountRoles.ROLE_ADMIN)
+                .build();
+    }
+
+    public static Employee toSaveEmployeeEntity(RqEmployee rqEmployee, String password, Employee createdBy, Department department) {
         LocalDateTime createdAt = LocalDateTime.now();
         return Employee.builder()
                 .createdBy(createdBy)
@@ -20,6 +32,7 @@ public class EmployeeMapper {
                 .password(password)
                 .fullName(rqEmployee.getFullName())
                 .department(department)
+                .accountRole(AccountRoles.ROLE_USER)
                 .build();
     }
 

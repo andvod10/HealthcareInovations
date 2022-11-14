@@ -21,12 +21,14 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Table(name = "employees")
 public class Employee extends BaseEntity {
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     String email;
     @Column(name = "password")
     String password;
     @Column(name = "full_name")
     String fullName;
+    @Column(name = "account_role")
+    AccountRoles accountRole;
     @JoinColumn(name = "dep_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.LAZY)
     Department department;

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -17,6 +18,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+@Component
 public class JWTFilter extends GenericFilterBean {
     private final Logger LOGGER = LoggerFactory.getLogger(JWTFilter.class);
     private final String AUTHORIZATION_HEADER = "Authorization";
@@ -37,8 +39,9 @@ public class JWTFilter extends GenericFilterBean {
 
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
             Authentication authentication = tokenProvider.getAuthentication(jwt);
-                Token authToken = tokenRepository.findToken(authentication.getName(), jwt)
-                        .orElse(null);
+            //TODO Probably, it's redundant
+            Token authToken = tokenRepository.findToken(authentication.getName(), jwt)
+                    .orElse(null);
 
             if (authToken == null) {
                 LOGGER.debug("no valid JWT token found, uri: {}", requestURI);

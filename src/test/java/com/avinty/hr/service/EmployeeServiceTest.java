@@ -5,6 +5,7 @@ import com.avinty.hr.data.entity.Department;
 import com.avinty.hr.data.entity.Employee;
 import com.avinty.hr.data.repository.DepartmentRepository;
 import com.avinty.hr.data.repository.EmployeeRepository;
+import com.avinty.hr.data.repository.TokenRepository;
 import com.avinty.hr.presentation.dto.RqChangeDepartment;
 import com.avinty.hr.presentation.dto.RqDepartment;
 import com.avinty.hr.presentation.dto.RqEmployee;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ContextConfiguration(classes = {TestConfigurations.class})
 @SpringBootTest
@@ -40,6 +43,8 @@ public class EmployeeServiceTest {
     private EmployeeRepository employeeRepository;
     @Autowired
     private DepartmentRepository departmentRepository;
+    @Autowired
+    private TokenRepository tokenRepository;
 
     private String adminId = null;
     private String employeeId = null;
@@ -52,14 +57,14 @@ public class EmployeeServiceTest {
                 .fullName("admin")
                 .password("password")
                 .build();
-        adminId = this.employeesService.addAdminEmployee(rqAdminEmployee);
+        adminId = this.employeesService.addAdminEmployee(rqAdminEmployee).getId();
         RqEmployee rqEmployeeEmployee = RqEmployee.builder()
                 .createdBy(adminId)
                 .email("employee@email.com")
                 .fullName("employee")
                 .password("password")
                 .build();
-        employeeId = this.employeesService.addEmployee(rqEmployeeEmployee);
+        employeeId = this.employeesService.addEmployee(rqEmployeeEmployee).getId();
     }
 
     @Test
@@ -89,13 +94,28 @@ public class EmployeeServiceTest {
 
     @Test
     @Transactional
+    void employeeAlreadyExistTest() {
+        RqEmployee rqEmployeeExisted = RqEmployee.builder()
+                .createdBy(adminId)
+                .email("Employee@email.com")
+                .fullName("employee")
+                .password("password")
+                .build();
+        assertThatThrownBy(() -> {
+            this.employeesService.addEmployee(rqEmployeeExisted);
+        }).isInstanceOf(BadCredentialsException.class)
+                .hasMessageContaining("Employee with email " + rqEmployeeExisted.getEmail() + " already exist!");
+    }
+
+    @Test
+    @Transactional
     void changeDepartmentTest() throws InterruptedException {
         Optional<Employee> optionalEmployee = this.employeeRepository.findByIdFetch(employeeId);
         assertThat(optionalEmployee.isPresent()).isTrue();
         Employee employee = optionalEmployee.get();
         String createdAt = CustomDateTimeFormatter.formatDateTime(employee.getCreatedAt());
         String updatedAt = CustomDateTimeFormatter.formatDateTime(employee.getUpdatedAt());
-                RqDepartment rqDepartment = RqDepartment.builder()
+        RqDepartment rqDepartment = RqDepartment.builder()
                 .createdBy(adminId)
                 .name("department")
                 .managerId(adminId)
@@ -147,6 +167,7 @@ public class EmployeeServiceTest {
         Department departmentUpdated = optionalDepartmentUpdated.get();
         assertThat(departmentUpdated.getEmployees().size()).isEqualTo(1);
 
+        this.tokenRepository.deleteAll();
         this.departmentService.deleteDepartment(departmentId);
         this.employeeRepository.deleteById(employeeId);
         this.employeeRepository.deleteById(adminId);

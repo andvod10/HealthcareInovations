@@ -2,6 +2,9 @@ package com.avinty.hr.configuration.jwt;
 
 import com.avinty.hr.configuration.UserModelDetails;
 import com.avinty.hr.data.entity.Employee;
+import com.avinty.hr.data.entity.Token;
+import com.avinty.hr.data.mapper.TokenMapper;
+import com.avinty.hr.data.repository.TokenRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -27,22 +30,24 @@ import java.util.Map;
 public class TokenProvider implements InitializingBean {
     @Value("${jwt.base64-secret}")
     private final String base64Secret = null;
+    private final Long SEC = 1000L;
     @Value("${jwt.access-token-lifetime-in-seconds}")
     private final Long accessTokenLifetimeInSeconds = 3600L;
     @Value("${jwt.refresh-token-lifetime-in-seconds}")
-    private final Long refreshTokenLifetimeInSeconds = 3600L;
-    private final Integer SEC = 1000;
+    private final Long refreshTokenLifetimeInSeconds = accessTokenLifetimeInSeconds * 48 * SEC;
     private final String AUTHORITIES_KEY = "id";
     private final UserModelDetails userDetailsService;
+    private final TokenRepository tokenRepository;
 
     private final Logger log = LoggerFactory.getLogger(TokenProvider.class);
     private final Long accessTokenLifetimeMs = accessTokenLifetimeInSeconds * SEC;
-    private final Long refreshTokenLifetimeMs = (refreshTokenLifetimeInSeconds != null) ? null : accessTokenLifetimeMs * 48 * SEC;
+    private final Long refreshTokenLifetimeMs = refreshTokenLifetimeInSeconds;
     private Key key;
 
     @Autowired
-    TokenProvider(UserModelDetails userDetailsService) {
+    TokenProvider(UserModelDetails userDetailsService, TokenRepository tokenRepository) {
         this.userDetailsService = userDetailsService;
+        this.tokenRepository = tokenRepository;
     }
 
     @Override
@@ -51,7 +56,13 @@ public class TokenProvider implements InitializingBean {
         key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    String generateToken(Employee employee, TokenType tokenType) {
+    public Token generateAccessAndRefreshTokens(Employee employee) {
+        String accessToken = generateToken(employee, TokenType.ACCESS);
+        String refreshToken = generateToken(employee, TokenType.REFRESH);
+        return this.tokenRepository.save(TokenMapper.toSaveEntity(employee, accessToken, refreshToken));
+    }
+
+    public String generateToken(Employee employee, TokenType tokenType) {
         Map<String, String> claims = new HashMap<>();
         claims.put(AUTHORITIES_KEY, employee.getId());
         return generateTokenWithClaims(claims, employee.getId(), tokenType);

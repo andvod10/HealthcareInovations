@@ -46,7 +46,7 @@ public class DepartmentServiceTest {
                 .fullName("admin")
                 .password("password")
                 .build();
-        adminId = this.employeesService.addAdminEmployee(rqAdminEmployee);
+        adminId = this.employeesService.addAdminEmployee(rqAdminEmployee).getId();
         RqDepartment rqDepartment = RqDepartment.builder()
                 .createdBy(adminId)
                 .name("department")

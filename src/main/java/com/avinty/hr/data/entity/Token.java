@@ -21,9 +21,9 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Table(name = "token")
 public class Token extends BaseEntity {
-    @Column(name = "access_token")
+    @Column(name = "access_token", length = 1024)
     String accessToken;
-    @Column(name = "refresh-token")
+    @Column(name = "refresh_token", length = 1024)
     String refreshToken;
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
