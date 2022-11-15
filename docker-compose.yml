@@ -1,6 +1,6 @@
 services:
   #PostgreSQL Database for the application
-  tick_tick_boom-postgres:
+  kh-postgres:
     image: "postgres:13.9-alpine"
     container_name: hr-postgres
     #    #Volume mounted for database for the storage
@@ -14,6 +14,22 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
 
+  #PostgreSQL Database for the application staging
+  kh-staging-postgres:
+    image: "postgres:13.9-alpine"
+    container_name: hr-staging-postgres
+    #    #Volume mounted for database for the storage
+    volumes:
+      - hr-staging-data:/var/lib/postgresql/data
+    ports:
+      - 5434:5432 # Forward the exposed port 5432 on the container to port 5432 on the host machine
+    #Environment variable for DB name, user and password
+    environment:
+      - POSTGRES_DB=hr-staging
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+
 #Volumes for DB data
 volumes:
   hr-data:
+  hr-staging-data:

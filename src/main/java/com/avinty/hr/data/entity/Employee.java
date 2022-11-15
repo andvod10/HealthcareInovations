@@ -1,6 +1,7 @@
 package com.avinty.hr.data.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,6 +30,9 @@ public class Employee extends BaseEntity {
     String fullName;
     @Column(name = "account_role")
     AccountRoles accountRole;
+    @Builder.Default
+    @Column(name = "is_active")
+    boolean isActive = false;
     @JoinColumn(name = "dep_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.LAZY)
     Department department;

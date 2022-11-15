@@ -11,4 +11,5 @@
 
     <include file="migration/1.0/db.changelog.structure.sql"/>
 <!--    <include file="migration/1.0/db.changelog.data.sql"/>-->
+    <include file="migration/1.0/db.changelog.structure.1.1.sql"/>
 </databaseChangeLog>
