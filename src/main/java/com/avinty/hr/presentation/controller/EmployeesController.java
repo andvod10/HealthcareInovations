@@ -7,6 +7,7 @@ import com.avinty.hr.presentation.dto.RsEmployee;
 import com.avinty.hr.presentation.dto.RsEmployeeInfo;
 import com.avinty.hr.service.employees.EmployeesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -28,22 +29,23 @@ public class EmployeesController {
     }
 
     @PostMapping("employee")
-    RsEmployeeInfo addEmployee(@Valid @RequestBody RqEmployee rqEmployee) {
+    public RsEmployeeInfo addEmployee(@Valid @RequestBody RqEmployee rqEmployee) {
         return this.employeesService.addEmployee(rqEmployee);
     }
 
     @PostMapping("admin")
-    RsEmployeeInfo addAdminEmployee(@RequestBody RqEmployee rqEmployee) {
+    public RsEmployeeInfo addAdminEmployee(@RequestBody RqEmployee rqEmployee) {
         return this.employeesService.addAdminEmployee(rqEmployee);
     }
 
     @GetMapping()
-    List<RsEmployee> getEmployees() {
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public List<RsEmployee> getEmployees() {
         return this.employeesService.getEmployees();
     }
 
     @PutMapping("department")
-    void changeDepartment(@RequestBody RqChangeDepartment rqChangeDepartment) {
+    public void changeDepartment(@RequestBody RqChangeDepartment rqChangeDepartment) {
         this.employeesService.changeDepartment(rqChangeDepartment);
     }
 }

@@ -6,6 +6,7 @@ import com.avinty.hr.presentation.dto.RsDepartment;
 import com.avinty.hr.presentation.dto.RsDepartmentInfo;
 import com.avinty.hr.service.employees.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,22 +29,24 @@ public class DepartmentController {
     }
 
     @GetMapping("dep-emp")
-    List<RsDepartment> getAllDepEmp() {
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public List<RsDepartment> getAllDepEmp() {
         return this.departmentService.getAllDepartments();
     }
 
     @GetMapping("department")
-    List<RsDepartmentInfo> getDepartmentsByName(@RequestParam(value = "name") String name) {
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    public List<RsDepartmentInfo> getDepartmentsByName(@RequestParam(value = "name") String name) {
         return this.departmentService.getAllDepartmentsByName(name);
     }
 
     @DeleteMapping("department/{id}")
-    void deleteDepartment(@PathVariable(value = "id") String id) {
+    public void deleteDepartment(@PathVariable(value = "id") String id) {
         this.departmentService.deleteDepartment(id);
     }
 
     @PostMapping("department")
-    String addDepartment(@RequestBody RqDepartment rqDepartment) {
+    public String addDepartment(@RequestBody RqDepartment rqDepartment) {
         return this.departmentService.addDepartment(rqDepartment);
     }
 }
