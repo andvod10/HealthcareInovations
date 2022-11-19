@@ -1,7 +1,6 @@
 package com.avinty.hr.configuration;
 
 import com.avinty.hr.configuration.jwt.JWTFilter;
-import com.avinty.hr.configuration.jwt.TokenProvider;
 import com.avinty.hr.presentation.APIVersions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -21,14 +20,12 @@ import java.util.List;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class ApplicationSecurityConfig {
     private final CorsFilter corsFilter;
-    private final TokenProvider tokenProvider;
     private final UserAuthEntryPoint userAuthEntryPoint;
     private final JWTFilter jwtFilter;
 
     @Autowired
-    ApplicationSecurityConfig(CorsFilter corsFilter, TokenProvider tokenProvider, UserAuthEntryPoint userAuthEntryPoint, JWTFilter jwtFilter) {
+    ApplicationSecurityConfig(CorsFilter corsFilter, UserAuthEntryPoint userAuthEntryPoint, JWTFilter jwtFilter) {
         this.corsFilter = corsFilter;
-        this.tokenProvider = tokenProvider;
         this.userAuthEntryPoint = userAuthEntryPoint;
         this.jwtFilter = jwtFilter;
     }
@@ -37,17 +34,17 @@ class ApplicationSecurityConfig {
             "/" + APIVersions.API + "/" + APIVersions.V1 + "/employees/admin",
             "/" + APIVersions.API + "/" + APIVersions.V1 + "/employees/employee",
             "/" + APIVersions.API + "/" + APIVersions.V1 + "/auth/**"
-    ).stream().toArray(String[]::new);
+    ).toArray(String[]::new);
 
     @Bean
     SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
                 .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeRequests()
-                .antMatchers(AUTH_REQUESTS).permitAll()
-                .anyRequest().authenticated()
-                .and()
+                .authorizeHttpRequests(authorize -> {
+                    authorize.antMatchers(AUTH_REQUESTS).permitAll();
+                    authorize.anyRequest().authenticated();
+                })
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(
                 jwtFilter,
@@ -56,9 +53,4 @@ class ApplicationSecurityConfig {
                 .authenticationEntryPoint(userAuthEntryPoint);
         return http.build();
     }
-
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return (web) -> web.ignoring().antMatchers("/" + APIVersions.API + "/" + APIVersions.V1 + "/employees/employees");
-//    }
 }

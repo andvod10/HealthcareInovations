@@ -29,13 +29,12 @@ import java.util.Map;
 @Component
 public class TokenProvider implements InitializingBean {
     @Value("${jwt.base64-secret}")
-    private final String base64Secret = null;
+    private final String base64Secret = "";
     private final Long SEC = 1000L;
     @Value("${jwt.access-token-lifetime-in-seconds}")
     private final Long accessTokenLifetimeInSeconds = 3600L;
     @Value("${jwt.refresh-token-lifetime-in-seconds}")
     private final Long refreshTokenLifetimeInSeconds = accessTokenLifetimeInSeconds * 48 * SEC;
-    private final String AUTHORITIES_KEY = "id";
     private final UserModelDetails userDetailsService;
     private final TokenRepository tokenRepository;
 
@@ -64,6 +63,7 @@ public class TokenProvider implements InitializingBean {
 
     public String generateToken(Employee employee, TokenType tokenType) {
         Map<String, String> claims = new HashMap<>();
+        String AUTHORITIES_KEY = "id";
         claims.put(AUTHORITIES_KEY, employee.getId());
         return generateTokenWithClaims(claims, employee.getId(), tokenType);
     }
