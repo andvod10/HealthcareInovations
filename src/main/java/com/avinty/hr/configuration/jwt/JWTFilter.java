@@ -5,6 +5,7 @@ import com.avinty.hr.data.repository.TokenRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -21,13 +22,19 @@ import javax.servlet.http.HttpServletRequest;
 @Component
 public class JWTFilter extends GenericFilterBean {
     private final Logger LOGGER = LoggerFactory.getLogger(JWTFilter.class);
-    private final String AUTHORIZATION_HEADER = "Authorization";
+    private final String authorizationHeader;
 
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;
 
     @Autowired
-    public JWTFilter(TokenProvider tokenProvider, TokenRepository tokenRepository) {
+    public JWTFilter(
+            @Value("${jwt.header}")
+                    String authorizationHeader,
+            TokenProvider tokenProvider,
+            TokenRepository tokenRepository
+    ) {
+        this.authorizationHeader = authorizationHeader;
         this.tokenProvider = tokenProvider;
         this.tokenRepository = tokenRepository;
     }
@@ -62,7 +69,7 @@ public class JWTFilter extends GenericFilterBean {
     }
 
     private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        String bearerToken = request.getHeader(authorizationHeader);
         String prefix = "Bearer ";
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(prefix)) {
             return bearerToken.substring(prefix.length());

@@ -8,12 +8,11 @@ import com.avinty.hr.data.repository.TokenRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,15 +20,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class TokenProvider implements InitializingBean {
-    @Value("${jwt.base64-secret}")
-    private final String base64Secret = "";
+public class TokenProvider {
+    private final String base64Secret;
     private final Long SEC = 1000L;
     @Value("${jwt.access-token-lifetime-in-seconds}")
     private final Long accessTokenLifetimeInSeconds = 3600L;
@@ -44,15 +44,21 @@ public class TokenProvider implements InitializingBean {
     private Key key;
 
     @Autowired
-    TokenProvider(UserModelDetails userDetailsService, TokenRepository tokenRepository) {
+    TokenProvider(
+            @Value("${jwt.base64-secret}")
+                    String base64Secret,
+            UserModelDetails userDetailsService,
+            TokenRepository tokenRepository
+    ) {
+        this.base64Secret = base64Secret;
         this.userDetailsService = userDetailsService;
         this.tokenRepository = tokenRepository;
     }
 
-    @Override
+    @PostConstruct
     public void afterPropertiesSet() {
         byte[] keyBytes = Decoders.BASE64.decode(base64Secret);
-        key = Keys.hmacShaKeyFor(keyBytes);
+        key = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS512.getJcaName());
     }
 
     public Token generateAccessAndRefreshTokens(Employee employee) {
@@ -63,8 +69,8 @@ public class TokenProvider implements InitializingBean {
 
     public String generateToken(Employee employee, TokenType tokenType) {
         Map<String, String> claims = new HashMap<>();
-        String AUTHORITIES_KEY = "id";
-        claims.put(AUTHORITIES_KEY, employee.getId());
+        String authoritiesKey = "id";
+        claims.put(authoritiesKey, employee.getId());
         return generateTokenWithClaims(claims, employee.getId(), tokenType);
     }
 
@@ -94,14 +100,14 @@ public class TokenProvider implements InitializingBean {
     }
 
     public Authentication getAuthentication(String token) {
-        String userId = Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody().getSubject();
+        String userId = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(userId);
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
     public Boolean validateToken(String authToken) {
         try {
-            Jwts.parser().setSigningKey(key).parseClaimsJws(authToken).getBody().getSubject();
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken).getBody().getSubject();
             return true;
         } catch (SecurityException e) {
             log.info("Invalid JWT signature.");

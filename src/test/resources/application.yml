@@ -6,7 +6,3 @@ jwt:
   access-token-lifetime-in-seconds: 7200
   # If Refresh token not provided, then it calculated 48 * Access-Token
   refresh-token-lifetime-in-seconds:
-  route:
-    authentication:
-      path: auth
-      refresh: refresh
