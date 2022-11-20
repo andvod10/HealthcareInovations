@@ -5,12 +5,10 @@ import com.avinty.hr.data.entity.Employee;
 import com.avinty.hr.data.entity.Token;
 import com.avinty.hr.data.mapper.TokenMapper;
 import com.avinty.hr.data.repository.TokenRepository;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +19,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
+import java.time.Instant;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class TokenProvider {
@@ -58,7 +54,7 @@ public class TokenProvider {
     @PostConstruct
     public void afterPropertiesSet() {
         byte[] keyBytes = Decoders.BASE64.decode(base64Secret);
-        key = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS512.getJcaName());
+        key = Keys.hmacShaKeyFor(keyBytes);
     }
 
     public Token generateAccessAndRefreshTokens(Employee employee) {
@@ -68,62 +64,41 @@ public class TokenProvider {
     }
 
     public String generateToken(Employee employee, TokenType tokenType) {
-        Map<String, String> claims = new HashMap<>();
-        String authoritiesKey = "id";
-        claims.put(authoritiesKey, employee.getId());
-        return generateTokenWithClaims(claims, employee.getId(), tokenType);
-    }
+        Long expirationTimeInEpoch = tokenType.equals(TokenType.ACCESS) ? accessTokenLifetimeMs : refreshTokenLifetimeMs;
 
-    private String generateTokenWithClaims(Map<String, String> claims, String userId, TokenType tokenType) {
-        Long expirationTimeLong = null;
-        switch (tokenType) {
-            case ACCESS:
-                expirationTimeLong = accessTokenLifetimeMs;
-                break;
-            case REFRESH:
-                expirationTimeLong = refreshTokenLifetimeMs;
-                break;
-            default:
-                break;
-        }
-
-        Date createdDate = new Date();
-        Date expirationDate = new Date(createdDate.getTime() + expirationTimeLong);
+        Date createdDate = new Date(Instant.now().toEpochMilli());
+        Date expirationDate = new Date(createdDate.getTime() + expirationTimeInEpoch);
 
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(userId)
+                .setIssuer(employee.getId())
+                .setSubject(employee.getId())
                 .setIssuedAt(createdDate)
                 .setExpiration(expirationDate)
                 .signWith(key)
                 .compact();
     }
 
-    public Authentication getAuthentication(String token) {
-        String userId = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+    public Authentication getAuthentication(String authToken) {
+        String userId = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(authToken)
+                .getBody()
+                .getIssuer();
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(userId);
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
     public Boolean validateToken(String authToken) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken).getBody().getSubject();
-            return true;
-        } catch (SecurityException e) {
-            log.info("Invalid JWT signature.");
-            log.trace("Invalid JWT signature trace: {}", e);
-        } catch (MalformedJwtException e) {
-            log.info("Invalid JWT signature.");
-            log.trace("Invalid JWT signature trace: {}", e);
-        } catch (ExpiredJwtException e) {
-            log.info("Expired JWT token.");
-            log.trace("Expired JWT token trace: {}", e);
-        } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT token.");
-            log.trace("Unsupported JWT token trace: {}", e);
-        } catch (IllegalArgumentException e) {
-            log.info("JWT token compact of handler are invalid.");
-            log.trace("JWT token compact of handler are invalid trace: {}", e);
+            return StringUtils.isNotBlank(Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(authToken)
+                    .getBody()
+                    .getIssuer());
+        } catch (RuntimeException e) {
+            log.warn(e.getLocalizedMessage());
         }
         return false;
     }

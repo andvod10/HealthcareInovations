@@ -25,7 +25,7 @@ public class UserModelDetails implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String id) {
-        log.debug("Authenticating user '{}'", id);
+        log.debug("Authenticating user with id '{}'", id);
 
         Employee employee = this.employeeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id));

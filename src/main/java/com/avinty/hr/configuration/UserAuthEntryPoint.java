@@ -25,7 +25,7 @@ public class UserAuthEntryPoint implements AuthenticationEntryPoint {
             HttpServletResponse response,
             AuthenticationException authException
     ) throws IOException {
-        log.debug("Unauthorized error: ${authException.message}");
+        log.debug("User is unauthorized: {}", authException.getLocalizedMessage());
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         ObjectMapper objectMapper = new ObjectMapper();

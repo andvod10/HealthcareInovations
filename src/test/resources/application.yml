@@ -1,7 +1,7 @@
 jwt:
   header: Authorization
   # This token must be encoded using Base64 with mininum 88 Bits (you can type `echo 'secret-key'|base64` on your command line)
-  base64-secret: ZmQ0ZGI5NjQ0MDQwY2I4MjMxY2Y3ZmI3MjdhN2ZmMjNhODViOTg1ZGE0NTBjMGM4NDA5NzYxMjdjOWMwYWRmZTBlZjlhNGY3ZTg4Y2U3YTE1ODVkZDU5Y2Y3OGYwZWE1NzUzNWQ2YjFjZDc0NGMxZWU2MmQ3MjY1NzJmNTE0MzI=
+  base64-secret: NDRmOTAzNGVhZDQzY2Y1ZGM0MDQ5ODlmMWRjNzliOTU3YTUxMDczOGEwMmUwY2JmMTFlY2RhMzZiZjVmMDM0YTdhZTZiNTEzY2ZkN2ViNTI4ZTI5YWQ1YWI4MjkyZGFmYWM1MTdjZTVkYjlkMzM0N2I1M2IxOWY0ZTA5MzE2MTM=
   # Access Token Lifetime 24h
   access-token-lifetime-in-seconds: 7200
   # If Refresh token not provided, then it calculated 48 * Access-Token

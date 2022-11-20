@@ -46,23 +46,14 @@ public class JWTFilter extends GenericFilterBean {
 
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
             Authentication authentication = tokenProvider.getAuthentication(jwt);
-            //TODO Probably, it's redundant
-            Token authToken = tokenRepository.findToken(authentication.getName(), jwt)
-                    .orElse(null);
-
-            if (authToken == null) {
-                LOGGER.debug("no valid JWT token found, uri: {}", requestURI);
-                SecurityContextHolder.clearContext();
-            } else {
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                LOGGER.debug(
-                        "Set Authentication to security context for '{}', uri: {}",
-                        authentication.getName(),
-                        requestURI
-                );
-            }
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            LOGGER.debug(
+                    "Authentication is added to security context holder '{}', uri: {}",
+                    authentication.getName(),
+                    requestURI
+            );
         } else {
-            LOGGER.debug("no valid JWT token found, uri: {}", requestURI);
+            LOGGER.debug("JWT must be provided, uri: {}", requestURI);
             SecurityContextHolder.clearContext();
         }
         filterChain.doFilter(servletRequest, servletResponse);
