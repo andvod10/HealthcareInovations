@@ -1,6 +1,5 @@
 package com.avinty.hr.configuration.jwt;
 
-import com.avinty.hr.data.entity.Token;
 import com.avinty.hr.data.repository.TokenRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -89,7 +89,7 @@ public class EmployeeServiceTest {
     void getAllEmployeesTest() {
         List<RsEmployee> employees = this.employeesService.getEmployees();
         assertThat(employees.size()).isEqualTo(2);
-        assertThat(employees.stream().map(RsEmployee::getId).collect(Collectors.toList())).contains(adminId, employeeId);
+        assertThat(employees.stream().map(RsEmployee::id).collect(Collectors.toList())).contains(adminId, employeeId);
     }
 
     @Test
@@ -131,15 +131,15 @@ public class EmployeeServiceTest {
         Thread.sleep(1000);
         this.employeesService.changeDepartment(rqChangeDepartment);
         RsEmployee updatedEmployee = this.employeesService.getEmployees().stream()
-                .filter(it -> it.getId().equals(employeeId))
+                .filter(it -> it.id().equals(employeeId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(employeeId));
 
-        assertThat(updatedEmployee.getCreatedAt()).isEqualTo(createdAt);
-        assertThat(updatedEmployee.getUpdatedBy()).isEqualTo(adminId);
-        assertThat(updatedEmployee.getUpdatedAt()).isNotEqualTo(updatedAt);
-        assertThat(updatedEmployee.getEmail()).isEqualTo("employee@email.com");
-        assertThat(updatedEmployee.getDepartmentId()).isEqualTo(departmentId);
+        assertThat(updatedEmployee.createdAt()).isEqualTo(createdAt);
+        assertThat(updatedEmployee.updatedBy()).isEqualTo(adminId);
+        assertThat(updatedEmployee.updatedAt()).isNotEqualTo(updatedAt);
+        assertThat(updatedEmployee.email()).isEqualTo("employee@email.com");
+        assertThat(updatedEmployee.departmentId()).isEqualTo(departmentId);
     }
 
     @Test

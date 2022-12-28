@@ -37,16 +37,16 @@ public class EmployeeMapper {
     }
 
     public static RsEmployee toResponse(Employee employee) {
-        return RsEmployee.builder()
-                .id(employee.getId())
-                .createdBy(employee.getCreatedBy() != null ? employee.getCreatedBy().getId() : null)
-                .createdAt(formatDateTime(employee.getCreatedAt()))
-                .updatedBy(employee.getUpdatedBy() != null ? employee.getUpdatedBy().getId() : null)
-                .updatedAt(formatDateTime(employee.getUpdatedAt()))
-                .email(employee.getEmail())
-                .fullName(employee.getFullName())
-                .departmentId(employee.getDepartment() != null ? employee.getDepartment().getId() : null)
-                .build();
+        return new RsEmployee(
+            employee.getId(),
+            employee.getCreatedBy() != null ? employee.getCreatedBy().getId() : null,
+            formatDateTime(employee.getCreatedAt()),
+            employee.getUpdatedBy() != null ? employee.getUpdatedBy().getId() : null,
+            formatDateTime(employee.getUpdatedAt()),
+            employee.getEmail(),
+            employee.getFullName(),
+            employee.getDepartment() != null ? employee.getDepartment().getId() : null
+        );
     }
 
     public static Employee toUpdateEntity(RqEditEmployee rqEditEmployee, String password, Employee updatedBy, Department department) {
