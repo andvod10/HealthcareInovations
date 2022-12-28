@@ -10,7 +10,7 @@ import com.avinty.hr.presentation.dto.RqChangeDepartment;
 import com.avinty.hr.presentation.dto.RqDepartment;
 import com.avinty.hr.presentation.dto.RqEmployee;
 import com.avinty.hr.presentation.dto.RsEmployee;
-import com.avinty.hr.service.employees.CustomDateTimeFormatter;
+import com.avinty.hr.service.employees.util.CustomDateTimeFormatter;
 import com.avinty.hr.service.employees.DepartmentService;
 import com.avinty.hr.service.employees.EmployeesService;
 import org.junit.jupiter.api.BeforeEach;

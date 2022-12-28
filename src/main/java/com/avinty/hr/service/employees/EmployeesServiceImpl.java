@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class EmployeesServiceImpl implements EmployeesService {
+public non-sealed class EmployeesServiceImpl implements EmployeesService {
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
     private final PasswordEncoder passwordEncoder;

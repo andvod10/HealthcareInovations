@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 
 @Service
-public class AuthServiceImpl implements AuthService {
+public non-sealed class AuthServiceImpl implements AuthService {
     private final EmployeeRepository employeeRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;

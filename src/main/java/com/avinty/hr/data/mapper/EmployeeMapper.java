@@ -9,7 +9,7 @@ import com.avinty.hr.presentation.dto.RsEmployee;
 
 import java.time.LocalDateTime;
 
-import static com.avinty.hr.service.employees.CustomDateTimeFormatter.formatDateTime;
+import static com.avinty.hr.service.employees.util.CustomDateTimeFormatter.formatDateTime;
 
 public class EmployeeMapper {
     public static Employee toSaveAdminEntity(RqEmployee rqEmployee, String password) {

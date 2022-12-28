@@ -7,7 +7,8 @@ import com.avinty.hr.presentation.dto.RsEmployeeInfo;
 
 import java.util.List;
 
-public interface EmployeesService {
+public sealed interface EmployeesService
+        permits EmployeesServiceImpl {
     List<RsEmployee> getEmployees();
     RsEmployeeInfo addAdminEmployee(RqEmployee rqEmployee);
     RsEmployeeInfo addEmployee(RqEmployee rqEmployee);

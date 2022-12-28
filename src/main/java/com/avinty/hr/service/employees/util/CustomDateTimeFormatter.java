@@ -1,4 +1,4 @@
-package com.avinty.hr.service.employees;
+package com.avinty.hr.service.employees.util;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

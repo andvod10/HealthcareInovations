@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class DepartmentServiceImpl implements DepartmentService {
+public non-sealed class DepartmentServiceImpl implements DepartmentService {
     private final DepartmentRepository departmentRepository;
     private final EmployeeRepository employeeRepository;
 

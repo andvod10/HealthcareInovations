@@ -7,7 +7,7 @@ import com.avinty.hr.presentation.dto.RqEditDepartment;
 import com.avinty.hr.presentation.dto.RsDepartment;
 import com.avinty.hr.presentation.dto.RsDepartmentInfo;
 import com.avinty.hr.presentation.dto.RsEmployee;
-import static com.avinty.hr.service.employees.CustomDateTimeFormatter.formatDateTime;
+import static com.avinty.hr.service.employees.util.CustomDateTimeFormatter.formatDateTime;
 
 import java.time.LocalDateTime;
 import java.util.List;
