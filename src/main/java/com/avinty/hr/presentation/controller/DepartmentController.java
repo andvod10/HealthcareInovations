@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping(APIVersions.API + "/" + APIVersions.V1 + "/")
+@RequestMapping(APIVersions.API + "/" + APIVersions.V1 + "/departments")
 public class DepartmentController {
     private final DepartmentService departmentService;
 
@@ -28,24 +28,24 @@ public class DepartmentController {
         this.departmentService = departmentService;
     }
 
-    @GetMapping("dep-emp")
+    @GetMapping()
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public List<RsDepartment> getAllDepEmp() {
+    public List<RsDepartment> getAllDepartments() {
         return this.departmentService.getAllDepartments();
     }
 
-    @GetMapping("department")
+    @GetMapping("/info")
     @PreAuthorize("hasAuthority('ROLE_USER')")
     public List<RsDepartmentInfo> getDepartmentsByName(@RequestParam(value = "name") String name) {
         return this.departmentService.getAllDepartmentsByName(name);
     }
 
-    @DeleteMapping("department/{id}")
+    @DeleteMapping("{id}")
     public void deleteDepartment(@PathVariable(value = "id") String id) {
         this.departmentService.deleteDepartment(id);
     }
 
-    @PostMapping("department")
+    @PostMapping()
     public String addDepartment(@RequestBody RqDepartment rqDepartment) {
         return this.departmentService.addDepartment(rqDepartment);
     }

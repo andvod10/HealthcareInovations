@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public non-sealed class DepartmentServiceImpl implements DepartmentService {
     private final DepartmentRepository departmentRepository;
     private final EmployeeRepository employeeRepository;
@@ -60,11 +61,9 @@ public non-sealed class DepartmentServiceImpl implements DepartmentService {
     @Override
     @Transactional
     public String addDepartment(RqDepartment rqDepartment) {
-        Employee createdBy = this.employeeRepository.findById(rqDepartment.getCreatedBy())
-                .orElseThrow(() -> new EntityNotFoundException(rqDepartment.getCreatedBy()));
         Employee manager = this.employeeRepository.findById(rqDepartment.getManagerId())
                 .orElseThrow(() -> new EntityNotFoundException(rqDepartment.getManagerId()));
-        return this.departmentRepository.save(DepartmentMapper.toSaveEntity(rqDepartment, createdBy, manager))
+        return this.departmentRepository.save(DepartmentMapper.toSaveEntity(rqDepartment, manager))
                 .getId();
     }
 }

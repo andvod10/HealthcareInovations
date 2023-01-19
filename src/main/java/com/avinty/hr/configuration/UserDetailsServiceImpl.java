@@ -14,12 +14,12 @@ import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Component
-public class UserModelDetails implements UserDetailsService {
-    private final Logger log = LoggerFactory.getLogger(UserModelDetails.class);
+public class UserDetailsServiceImpl implements UserDetailsService {
+    private final Logger log = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
     private final EmployeeRepository employeeRepository;
 
     @Autowired
-    UserModelDetails(EmployeeRepository employeeRepository) {
+    UserDetailsServiceImpl(EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
     }
 
@@ -30,8 +30,8 @@ public class UserModelDetails implements UserDetailsService {
         Employee employee = this.employeeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id));
 
-        return UserDetailsImpl.builder()
-                .id(id)
+        return UserDetailsModel.builder()
+                .employee(employee)
                 .authorities(List.of(new SimpleGrantedAuthority(employee.getAccountRole().name())))
                 .build();
     }

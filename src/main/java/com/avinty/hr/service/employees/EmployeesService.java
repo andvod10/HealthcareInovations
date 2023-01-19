@@ -1,6 +1,5 @@
 package com.avinty.hr.service.employees;
 
-import com.avinty.hr.presentation.dto.RqChangeDepartment;
 import com.avinty.hr.presentation.dto.RqEmployee;
 import com.avinty.hr.presentation.dto.RsEmployee;
 import com.avinty.hr.presentation.dto.RsEmployeeInfo;
@@ -12,5 +11,5 @@ public sealed interface EmployeesService
     List<RsEmployee> getEmployees();
     RsEmployeeInfo addAdminEmployee(RqEmployee rqEmployee);
     RsEmployeeInfo addEmployee(RqEmployee rqEmployee);
-    void changeDepartment(RqChangeDepartment rqChangeDepartment);
+    void changeDepartment(String employeeId, String departmentId);
 }

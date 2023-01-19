@@ -1,16 +1,13 @@
 package com.avinty.hr.service;
 
-import com.avinty.hr.configuration.TestConfigurations;
 import com.avinty.hr.data.entity.Department;
 import com.avinty.hr.data.entity.Employee;
 import com.avinty.hr.data.repository.DepartmentRepository;
 import com.avinty.hr.data.repository.EmployeeRepository;
 import com.avinty.hr.data.repository.TokenRepository;
-import com.avinty.hr.presentation.dto.RqChangeDepartment;
 import com.avinty.hr.presentation.dto.RqDepartment;
 import com.avinty.hr.presentation.dto.RqEmployee;
 import com.avinty.hr.presentation.dto.RsEmployee;
-import com.avinty.hr.service.employees.util.CustomDateTimeFormatter;
 import com.avinty.hr.service.employees.DepartmentService;
 import com.avinty.hr.service.employees.EmployeesService;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,9 +27,9 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@ContextConfiguration(classes = {TestConfigurations.class})
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
+@Transactional
 public class EmployeeServiceTest {
     @Autowired
     private EmployeesService employeesService;
@@ -59,7 +55,6 @@ public class EmployeeServiceTest {
                 .build();
         adminId = this.employeesService.addAdminEmployee(rqAdminEmployee).getId();
         RqEmployee rqEmployeeEmployee = RqEmployee.builder()
-                .createdBy(adminId)
                 .email("employee@email.com")
                 .fullName("employee")
                 .password("password")
@@ -74,10 +69,6 @@ public class EmployeeServiceTest {
         assertThat(optionalEmployee.isPresent()).isTrue();
         Employee employee = optionalEmployee.get();
 
-        assertThat(employee.getCreatedBy().getId()).isEqualTo(adminId);
-        assertThat(employee.getCreatedAt()).isNotNull();
-        assertThat(employee.getUpdatedBy()).isNull();
-        assertThat(employee.getUpdatedAt()).isNotNull();
         assertThat(employee.getEmail()).isEqualTo("employee@email.com");
         assertThat(employee.getFullName()).isEqualTo("employee");
         assertThat(employee.getPassword()).isNotNull();
@@ -96,7 +87,6 @@ public class EmployeeServiceTest {
     @Transactional
     void employeeAlreadyExistTest() {
         RqEmployee rqEmployeeExisted = RqEmployee.builder()
-                .createdBy(adminId)
                 .email("Employee@email.com")
                 .fullName("employee")
                 .password("password")
@@ -112,32 +102,20 @@ public class EmployeeServiceTest {
     void changeDepartmentTest() throws InterruptedException {
         Optional<Employee> optionalEmployee = this.employeeRepository.findByIdFetch(employeeId);
         assertThat(optionalEmployee.isPresent()).isTrue();
-        Employee employee = optionalEmployee.get();
-        String createdAt = CustomDateTimeFormatter.formatDateTime(employee.getCreatedAt());
-        String updatedAt = CustomDateTimeFormatter.formatDateTime(employee.getUpdatedAt());
         RqDepartment rqDepartment = RqDepartment.builder()
-                .createdBy(adminId)
                 .name("department")
                 .managerId(adminId)
                 .build();
         departmentId = this.departmentService.addDepartment(rqDepartment);
-        RqChangeDepartment rqChangeDepartment = RqChangeDepartment.builder()
-                .employeeId(employeeId)
-                .updatedBy(adminId)
-                .departmentId(departmentId)
-                .build();
 
         //Wait for updateAt will be changed
         Thread.sleep(1000);
-        this.employeesService.changeDepartment(rqChangeDepartment);
+        this.employeesService.changeDepartment(employeeId, departmentId);
         RsEmployee updatedEmployee = this.employeesService.getEmployees().stream()
                 .filter(it -> it.id().equals(employeeId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(employeeId));
 
-        assertThat(updatedEmployee.createdAt()).isEqualTo(createdAt);
-        assertThat(updatedEmployee.updatedBy()).isEqualTo(adminId);
-        assertThat(updatedEmployee.updatedAt()).isNotEqualTo(updatedAt);
         assertThat(updatedEmployee.email()).isEqualTo("employee@email.com");
         assertThat(updatedEmployee.departmentId()).isEqualTo(departmentId);
     }
@@ -145,7 +123,6 @@ public class EmployeeServiceTest {
     @Test
     void changeDepartmentEmployeeAddedToTheListTest() {
         RqDepartment rqDepartment = RqDepartment.builder()
-                .createdBy(adminId)
                 .name("department")
                 .managerId(adminId)
                 .build();
@@ -155,12 +132,7 @@ public class EmployeeServiceTest {
         Department department = optionalDepartment.get();
         assertThat(department.getEmployees()).isEmpty();
 
-        RqChangeDepartment rqChangeDepartment = RqChangeDepartment.builder()
-                .employeeId(employeeId)
-                .updatedBy(adminId)
-                .departmentId(departmentId)
-                .build();
-        this.employeesService.changeDepartment(rqChangeDepartment);
+        this.employeesService.changeDepartment(employeeId, departmentId);
 
         Optional<Department> optionalDepartmentUpdated = this.departmentRepository.findByIdFetchAll(departmentId);
         assertThat(optionalDepartmentUpdated.isPresent()).isTrue();

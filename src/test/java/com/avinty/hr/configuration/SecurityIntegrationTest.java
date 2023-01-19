@@ -14,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +22,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@ContextConfiguration(classes = {TestConfigurations.class})
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @Transactional
@@ -35,9 +33,6 @@ public class SecurityIntegrationTest {
     @Autowired
     private EmployeesService employeesService;
 
-    private String adminId = null;
-    private String employeeId = null;
-
     @BeforeEach
     public void setup() {
         RqEmployee rqAdminEmployee = RqEmployee.builder()
@@ -45,14 +40,13 @@ public class SecurityIntegrationTest {
                 .fullName("admin")
                 .password("password")
                 .build();
-        adminId = this.employeesService.addAdminEmployee(rqAdminEmployee).getId();
+        this.employeesService.addAdminEmployee(rqAdminEmployee).getId();
         RqEmployee rqEmployeeEmployee = RqEmployee.builder()
-                .createdBy(adminId)
                 .email("employee@email.com")
                 .fullName("employee")
                 .password("password")
                 .build();
-        employeeId = this.employeesService.addEmployee(rqEmployeeEmployee).getId();
+        this.employeesService.addEmployee(rqEmployeeEmployee).getId();
     }
 
     @Test

@@ -8,9 +8,6 @@ import lombok.Setter;
 @Setter
 @Builder
 public class RqEditEmployee {
-    String id;
-    String createdBy;
-    String updatedBy;
     String email;
     String password;
     String fullName;

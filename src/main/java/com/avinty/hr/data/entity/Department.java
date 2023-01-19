@@ -2,10 +2,10 @@ package com.avinty.hr.data.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import lombok.NonNull;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,20 +17,22 @@ import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Getter
-@Setter
-@SuperBuilder
+@EqualsAndHashCode(callSuper = false)
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
+@Entity
 @Table(name = "department")
 public class Department extends BaseEntity {
+    @NonNull
     @Column(name = "name")
-    String name;
+    private String name;
+    @NonNull
     @JoinColumn(name = "manager_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.LAZY)
-    Employee manager;
+    private Employee manager;
     @Builder.Default
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "department")
-    List<Employee> employees = new ArrayList<>();
+    private List<Employee> employees = new ArrayList<>();
 }

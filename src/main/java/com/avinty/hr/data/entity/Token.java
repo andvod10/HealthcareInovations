@@ -1,10 +1,11 @@
 package com.avinty.hr.data.entity;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import lombok.NonNull;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,19 +14,20 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-@Entity
-@Getter
-@Setter
-@SuperBuilder
+@EqualsAndHashCode(callSuper = false)
+@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 @Table(name = "token")
 public class Token extends BaseEntity {
     @Column(name = "access_token", length = 1024)
-    String accessToken;
+    private String accessToken;
     @Column(name = "refresh_token", length = 1024)
-    String refreshToken;
+    private String refreshToken;
+    @NonNull
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
-    Employee employee;
+    private Employee employee;
 }

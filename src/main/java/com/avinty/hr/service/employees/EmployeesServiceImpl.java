@@ -7,7 +7,6 @@ import com.avinty.hr.data.entity.Token;
 import com.avinty.hr.data.mapper.EmployeeMapper;
 import com.avinty.hr.data.repository.DepartmentRepository;
 import com.avinty.hr.data.repository.EmployeeRepository;
-import com.avinty.hr.presentation.dto.RqChangeDepartment;
 import com.avinty.hr.presentation.dto.RqEmployee;
 import com.avinty.hr.presentation.dto.RsEmployee;
 import com.avinty.hr.presentation.dto.RsEmployeeInfo;
@@ -18,11 +17,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public non-sealed class EmployeesServiceImpl implements EmployeesService {
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
@@ -68,17 +67,15 @@ public non-sealed class EmployeesServiceImpl implements EmployeesService {
     public RsEmployeeInfo addEmployee(RqEmployee rqEmployee) {
         validate(rqEmployee);
         String password = this.passwordEncoder.encode(rqEmployee.getPassword());
-        Employee creator = this.employeeRepository.findById(rqEmployee.getCreatedBy())
-                .orElseThrow(() -> new EntityNotFoundException(rqEmployee.getCreatedBy()));
         Department department = null;
         if (rqEmployee.getDepartmentId() != null) {
             department = this.departmentRepository.findById(rqEmployee.getDepartmentId())
                     .orElseThrow(() -> new EntityNotFoundException(rqEmployee.getDepartmentId()));
         }
-        Employee employee = this.employeeRepository.save(EmployeeMapper.toSaveEmployeeEntity(rqEmployee, password, creator, department));
+        Employee employee = this.employeeRepository.save(EmployeeMapper.toSaveEmployeeEntity(rqEmployee, password, department));
         Token token = this.tokenProvider.generateAccessAndRefreshTokens(employee);
         return RsEmployeeInfo.builder()
-                .id(employee.getId())
+                .id(employee.getId().toString())
                 .accessToken(token.getAccessToken())
                 .refreshToken(token.getRefreshToken())
                 .build();
@@ -86,20 +83,13 @@ public non-sealed class EmployeesServiceImpl implements EmployeesService {
 
     @Override
     @Transactional
-    public void changeDepartment(RqChangeDepartment rqChangeDepartment) {
-        Department department = null;
-        Employee employee = this.employeeRepository.findById(rqChangeDepartment.getEmployeeId())
-                .orElseThrow(() -> new EntityNotFoundException(rqChangeDepartment.getEmployeeId()));
-        Employee updater = this.employeeRepository.findById(rqChangeDepartment.getUpdatedBy())
-                .orElseThrow(() -> new EntityNotFoundException(rqChangeDepartment.getUpdatedBy()));
-        if (rqChangeDepartment.getDepartmentId() != null) {
-            department = this.departmentRepository.findById(rqChangeDepartment.getDepartmentId())
-                    .orElseThrow(() -> new EntityNotFoundException(rqChangeDepartment.getDepartmentId()));
-            department.getEmployees().add(employee);
-        }
+    public void changeDepartment(String employeeId, String departmentId) {
+        Employee employee = this.employeeRepository.findByIdFetch(employeeId)
+                .orElseThrow(() -> new EntityNotFoundException(employeeId));
+        Department department = this.departmentRepository.findById(departmentId)
+                .orElseThrow(() -> new EntityNotFoundException(departmentId));
+        department.getEmployees().add(employee);
         employee.setDepartment(department);
-        employee.setUpdatedBy(updater);
-        employee.setUpdatedAt(LocalDateTime.now());
         this.employeeRepository.save(employee);
     }
 

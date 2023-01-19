@@ -16,8 +16,6 @@ public interface EmployeeRepository extends CrudRepository<Employee, String> {
     @Override
     @Query(
             "select e from Employee e " +
-                    "left join fetch e.createdBy " +
-                    "left join fetch e.updatedBy " +
                     "left join fetch e.department "
     )
     List<Employee> findAll();
@@ -25,7 +23,7 @@ public interface EmployeeRepository extends CrudRepository<Employee, String> {
     @Query(
             "select e from Employee e " +
                     "left join fetch e.createdBy " +
-                    "left join fetch e.updatedBy " +
+                    "left join fetch e.lastModifiedBy " +
                     "left join fetch e.department " +
                     "where e.id = :id"
     )

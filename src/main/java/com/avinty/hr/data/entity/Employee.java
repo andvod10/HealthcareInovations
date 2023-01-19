@@ -2,10 +2,10 @@ package com.avinty.hr.data.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import lombok.NonNull;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,26 +14,30 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-@Entity
-@Getter
-@Setter
-@SuperBuilder
+@EqualsAndHashCode(callSuper = false)
+@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 @Table(name = "employees")
 public class Employee extends BaseEntity {
+    @NonNull
     @Column(name = "email", unique = true)
-    String email;
+    private String email;
+    @NonNull
     @Column(name = "password")
-    String password;
+    private String password;
+    @NonNull
     @Column(name = "full_name")
-    String fullName;
+    private String fullName;
+    @NonNull
     @Column(name = "account_role")
-    AccountRoles accountRole;
+    private AccountRoles accountRole;
     @Builder.Default
     @Column(name = "is_active")
-    boolean isActive = false;
+    private boolean isActive = false;
     @JoinColumn(name = "dep_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.LAZY)
-    Department department;
+    private Department department;
 }

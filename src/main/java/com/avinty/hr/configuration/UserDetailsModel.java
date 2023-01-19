@@ -1,5 +1,6 @@
 package com.avinty.hr.configuration;
 
+import com.avinty.hr.data.entity.Employee;
 import lombok.Builder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,12 +8,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Objects;
 
-@Builder
-public class UserDetailsImpl implements UserDetails {
-    private final String id;
-    private final String email;
-    private final String password;
-    private final Collection<GrantedAuthority> authorities;
+public record UserDetailsModel(
+        Employee employee,
+        String email,
+        String password,
+        Collection<GrantedAuthority> authorities
+) implements UserDetails {
+    @Builder public UserDetailsModel {}
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -26,7 +28,11 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return id;
+        return employee.getId().toString();
+    }
+
+    public Employee getUser() {
+        return employee;
     }
 
     @Override
@@ -54,13 +60,13 @@ public class UserDetailsImpl implements UserDetails {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        UserDetailsImpl that = (UserDetailsImpl) o;
+        UserDetailsModel that = (UserDetailsModel) o;
 
-        return Objects.equals(id, that.id);
+        return Objects.equals(employee, that.employee);
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        return employee != null ? employee.hashCode() : 0;
     }
 }

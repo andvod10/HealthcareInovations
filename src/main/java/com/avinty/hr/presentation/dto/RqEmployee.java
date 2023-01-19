@@ -9,8 +9,6 @@ import javax.validation.constraints.NotEmpty;
 @Setter
 @Builder
 public class RqEmployee {
-    String createdBy;
-    String updatedBy;
     @NotEmpty
     String email;
     @NotEmpty

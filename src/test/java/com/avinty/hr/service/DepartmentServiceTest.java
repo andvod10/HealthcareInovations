@@ -1,6 +1,5 @@
 package com.avinty.hr.service;
 
-import com.avinty.hr.configuration.TestConfigurations;
 import com.avinty.hr.data.entity.Department;
 import com.avinty.hr.data.repository.DepartmentRepository;
 import com.avinty.hr.presentation.dto.RqDepartment;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +22,6 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ContextConfiguration(classes = {TestConfigurations.class})
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @Transactional
@@ -48,7 +45,6 @@ public class DepartmentServiceTest {
                 .build();
         adminId = this.employeesService.addAdminEmployee(rqAdminEmployee).getId();
         RqDepartment rqDepartment = RqDepartment.builder()
-                .createdBy(adminId)
                 .name("department")
                 .managerId(adminId)
                 .build();
@@ -61,10 +57,6 @@ public class DepartmentServiceTest {
         assertThat(optionalDepartment.isPresent()).isTrue();
         Department department = optionalDepartment.get();
 
-        assertThat(department.getCreatedBy().getId()).isEqualTo(adminId);
-        assertThat(department.getCreatedAt()).isNotNull();
-        assertThat(department.getUpdatedBy()).isNull();
-        assertThat(department.getUpdatedAt()).isNotNull();
         assertThat(department.getName()).isEqualTo("department");
         assertThat(department.getManager().getId()).isEqualTo(adminId);
     }
@@ -72,7 +64,6 @@ public class DepartmentServiceTest {
     @Test
     void getAllDepartmentsTest() {
         RqDepartment rqDepartmentB = RqDepartment.builder()
-                .createdBy(adminId)
                 .name("departmentB")
                 .managerId(adminId)
                 .build();
@@ -86,7 +77,6 @@ public class DepartmentServiceTest {
     @Test
     void getAllDepartmentsByNameTest() {
         RqDepartment rqDepartmentC = RqDepartment.builder()
-                .createdBy(adminId)
                 .name("departmentC")
                 .managerId(adminId)
                 .build();

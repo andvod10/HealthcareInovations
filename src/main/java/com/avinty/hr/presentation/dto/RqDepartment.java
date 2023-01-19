@@ -8,8 +8,6 @@ import lombok.Setter;
 @Setter
 @Builder
 public class RqDepartment {
-    String createdBy;
-    String updatedBy;
     String name;
     String managerId;
 }

@@ -3,21 +3,17 @@ package com.avinty.hr.data.mapper;
 import com.avinty.hr.data.entity.Department;
 import com.avinty.hr.data.entity.Employee;
 import com.avinty.hr.presentation.dto.RqDepartment;
-import com.avinty.hr.presentation.dto.RqEditDepartment;
 import com.avinty.hr.presentation.dto.RsDepartment;
 import com.avinty.hr.presentation.dto.RsDepartmentInfo;
 import com.avinty.hr.presentation.dto.RsEmployee;
+
 import static com.avinty.hr.service.employees.util.CustomDateTimeFormatter.formatDateTime;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class DepartmentMapper {
-    public static Department toSaveEntity(RqDepartment rqDepartment, Employee createdBy, Employee manager) {
-        LocalDateTime createdAt = LocalDateTime.now();
+    public static Department toSaveEntity(RqDepartment rqDepartment, Employee manager) {
         return Department.builder()
-                .createdBy(createdBy)
-                .createdAt(createdAt)
                 .name(rqDepartment.getName())
                 .manager(manager)
                 .build();
@@ -25,13 +21,13 @@ public class DepartmentMapper {
 
     public static RsDepartment toResponse(Department department, List<RsEmployee> employees) {
         return RsDepartment.builder()
-                .id(department.getId())
-                .createdBy(department.getCreatedBy() != null ? department.getCreatedBy().getId() : null)
-                .createdAt(formatDateTime(department.getCreatedAt()))
-                .updatedBy(department.getUpdatedBy() != null ? department.getUpdatedBy().getId() : null)
-                .updatedAt(formatDateTime(department.getCreatedAt()))
+                .id(department.getId().toString())
+                .createdBy(department.getCreatedBy() != null ? department.getCreatedBy().getId().toString() : null)
+                .createdAt(formatDateTime(department.getCreatedDate()))
+                .updatedBy(department.getLastModifiedBy() != null ? department.getLastModifiedBy().getId().toString() : null)
+                .updatedAt(formatDateTime(department.getLastModifiedDate()))
                 .name(department.getName())
-                .managerId(department.getManager() != null ? department.getManager().getId() : null)
+                .managerId(department.getManager().getId().toString())
                 .employees(employees)
                 .build();
     }
@@ -43,14 +39,4 @@ public class DepartmentMapper {
                 .build();
     }
 
-    public static Department toUpdateEntity(RqEditDepartment rqEditDepartment, Employee updatedBy, Employee manager) {
-        LocalDateTime updatedAt = LocalDateTime.now();
-        return Department.builder()
-                .id(rqEditDepartment.getId())
-                .updatedBy(updatedBy)
-                .updatedAt(updatedAt)
-                .name(rqEditDepartment.getName())
-                .manager(manager)
-                .build();
-    }
 }

@@ -1,6 +1,6 @@
 package com.avinty.hr.service;
 
-import com.avinty.hr.configuration.TestConfigurations;
+import com.avinty.hr.configuration.UserDetailsModel;
 import com.avinty.hr.configuration.jwt.TokenProvider;
 import com.avinty.hr.data.entity.AccountRoles;
 import com.avinty.hr.data.entity.Employee;
@@ -15,18 +15,22 @@ import com.avinty.hr.service.employees.EmployeesService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ContextConfiguration(classes = {TestConfigurations.class})
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @Transactional
@@ -53,8 +57,22 @@ public class AuthServiceTest {
                 .password("password")
                 .build();
         adminId = this.employeesService.addAdminEmployee(rqAdminEmployee).getId();
+
+        assertThat(this.employeeRepository.findById(adminId).isPresent()).isTrue();
+        var employee = this.employeeRepository.findById(adminId).get();
+        var principal = UserDetailsModel.builder()
+                .employee(employee)
+                .authorities(List.of(new SimpleGrantedAuthority(employee.getAccountRole().name())))
+                .build();
+
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.isAuthenticated()).thenReturn(true);
+        Mockito.when(authentication.getPrincipal()).thenReturn(principal);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
         RqEmployee rqEmployeeEmployee = RqEmployee.builder()
-                .createdBy(adminId)
                 .email("employee@email.com")
                 .fullName("employee")
                 .password("password")

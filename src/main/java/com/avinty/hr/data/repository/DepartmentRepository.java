@@ -15,8 +15,6 @@ public interface DepartmentRepository extends CrudRepository<Department, String>
 
     @Query(
             "select d from Department d " +
-                    "left join fetch d.createdBy " +
-                    "left join fetch d.updatedBy " +
                     "left join fetch d.manager " +
                     "left join fetch d.employees "
     )
@@ -24,8 +22,6 @@ public interface DepartmentRepository extends CrudRepository<Department, String>
 
     @Query(
             "select d from Department d " +
-                    "left join fetch d.createdBy " +
-                    "left join fetch d.updatedBy " +
                     "left join fetch d.manager " +
                     "left join fetch d.employees " +
                     "where d.id = :id"

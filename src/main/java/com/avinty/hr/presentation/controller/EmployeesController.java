@@ -1,7 +1,6 @@
 package com.avinty.hr.presentation.controller;
 
 import com.avinty.hr.presentation.APIVersions;
-import com.avinty.hr.presentation.dto.RqChangeDepartment;
 import com.avinty.hr.presentation.dto.RqEmployee;
 import com.avinty.hr.presentation.dto.RsEmployee;
 import com.avinty.hr.presentation.dto.RsEmployeeInfo;
@@ -9,6 +8,7 @@ import com.avinty.hr.service.employees.EmployeesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,8 +44,9 @@ public class EmployeesController {
         return this.employeesService.getEmployees();
     }
 
-    @PutMapping("department")
-    public void changeDepartment(@RequestBody RqChangeDepartment rqChangeDepartment) {
-        this.employeesService.changeDepartment(rqChangeDepartment);
+    @PutMapping("{employeeId}/department/{departmentId}")
+    public void changeDepartment(@PathVariable("employeeId") String employeeId,
+                                 @PathVariable("departmentId") String departmentId) {
+        this.employeesService.changeDepartment(employeeId, departmentId);
     }
 }

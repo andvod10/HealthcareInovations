@@ -1,6 +1,6 @@
 package com.avinty.hr.configuration.jwt;
 
-import com.avinty.hr.configuration.UserModelDetails;
+import com.avinty.hr.configuration.UserDetailsServiceImpl;
 import com.avinty.hr.data.entity.Employee;
 import com.avinty.hr.data.entity.Token;
 import com.avinty.hr.data.mapper.TokenMapper;
@@ -31,7 +31,7 @@ public class TokenProvider {
     private final Long accessTokenLifetimeInSeconds = 3600L;
     @Value("${jwt.refresh-token-lifetime-in-seconds}")
     private final Long refreshTokenLifetimeInSeconds = accessTokenLifetimeInSeconds * 48 * SEC;
-    private final UserModelDetails userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
     private final TokenRepository tokenRepository;
 
     private final Logger log = LoggerFactory.getLogger(TokenProvider.class);
@@ -43,7 +43,7 @@ public class TokenProvider {
     TokenProvider(
             @Value("${jwt.base64-secret}")
                     String base64Secret,
-            UserModelDetails userDetailsService,
+            UserDetailsServiceImpl userDetailsService,
             TokenRepository tokenRepository
     ) {
         this.base64Secret = base64Secret;
@@ -70,8 +70,8 @@ public class TokenProvider {
         Date expirationDate = new Date(createdDate.getTime() + expirationTimeInEpoch);
 
         return Jwts.builder()
-                .setIssuer(employee.getId())
-                .setSubject(employee.getId())
+                .setIssuer(employee.getId().toString())
+                .setSubject(employee.getId().toString())
                 .setIssuedAt(createdDate)
                 .setExpiration(expirationDate)
                 .signWith(key)
