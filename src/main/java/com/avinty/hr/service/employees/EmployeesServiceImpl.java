@@ -89,7 +89,6 @@ public non-sealed class EmployeesServiceImpl implements EmployeesService {
         Department department = this.departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new EntityNotFoundException(departmentId));
         department.addEmployee(employee);
-        this.employeeRepository.save(employee);
     }
 
     private void validate(RqEmployee rqEmployee) {
