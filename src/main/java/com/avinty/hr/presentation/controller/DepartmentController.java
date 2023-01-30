@@ -5,7 +5,7 @@ import com.avinty.hr.presentation.dto.RqDepartment;
 import com.avinty.hr.presentation.dto.RsDepartment;
 import com.avinty.hr.presentation.dto.RsDepartmentInfo;
 import com.avinty.hr.service.employees.DepartmentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,14 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(APIVersions.API + "/" + APIVersions.V1 + "/departments")
 public class DepartmentController {
     private final DepartmentService departmentService;
-
-    @Autowired
-    DepartmentController(DepartmentService departmentService) {
-        this.departmentService = departmentService;
-    }
 
     @GetMapping()
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")

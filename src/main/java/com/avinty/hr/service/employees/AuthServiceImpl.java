@@ -43,9 +43,11 @@ public non-sealed class AuthServiceImpl implements AuthService {
             throw new BadCredentialsException("Password for employee " + employee.getId() + "doesn't match");
         }
         Token token = this.tokenRepository.findByEmployee(employee)
-                .orElse(Token.builder()
-                        .employee(employee)
-                        .build());
+                .orElseGet(() -> {
+                    var defaultToken = new Token();
+                    defaultToken.setEmployee(employee);
+                    return defaultToken;
+                });
 
         String accessToken = this.tokenProvider.generateToken(employee, TokenType.ACCESS);
         token.setAccessToken(accessToken);

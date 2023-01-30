@@ -70,8 +70,8 @@ public class TokenProvider {
         Date expirationDate = new Date(createdDate.getTime() + expirationTimeInEpoch);
 
         return Jwts.builder()
-                .setIssuer(employee.getId().toString())
-                .setSubject(employee.getId().toString())
+                .setIssuer(employee.getId())
+                .setSubject(employee.getId())
                 .setIssuedAt(createdDate)
                 .setExpiration(expirationDate)
                 .signWith(key)

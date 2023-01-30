@@ -5,7 +5,7 @@ import com.avinty.hr.presentation.dto.RqEmployee;
 import com.avinty.hr.presentation.dto.RsEmployee;
 import com.avinty.hr.presentation.dto.RsEmployeeInfo;
 import com.avinty.hr.service.employees.EmployeesService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,14 +19,10 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(APIVersions.API + "/" + APIVersions.V1 + "/employees")
 public class EmployeesController {
     private final EmployeesService employeesService;
-
-    @Autowired
-    EmployeesController(EmployeesService employeesService) {
-        this.employeesService = employeesService;
-    }
 
     @PostMapping("employee")
     public RsEmployeeInfo addEmployee(@Valid @RequestBody RqEmployee rqEmployee) {

@@ -28,7 +28,7 @@ public record UserDetailsModel(
 
     @Override
     public String getUsername() {
-        return employee.getId().toString();
+        return employee.getId();
     }
 
     public Employee getUser() {

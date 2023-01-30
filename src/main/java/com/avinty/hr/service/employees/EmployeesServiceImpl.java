@@ -75,7 +75,7 @@ public non-sealed class EmployeesServiceImpl implements EmployeesService {
         Employee employee = this.employeeRepository.save(EmployeeMapper.toSaveEmployeeEntity(rqEmployee, password, department));
         Token token = this.tokenProvider.generateAccessAndRefreshTokens(employee);
         return RsEmployeeInfo.builder()
-                .id(employee.getId().toString())
+                .id(employee.getId())
                 .accessToken(token.getAccessToken())
                 .refreshToken(token.getRefreshToken())
                 .build();
@@ -88,8 +88,7 @@ public non-sealed class EmployeesServiceImpl implements EmployeesService {
                 .orElseThrow(() -> new EntityNotFoundException(employeeId));
         Department department = this.departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new EntityNotFoundException(departmentId));
-        department.getEmployees().add(employee);
-        employee.setDepartment(department);
+        department.addEmployee(employee);
         this.employeeRepository.save(employee);
     }
 

@@ -63,9 +63,8 @@ public class JWTFilter extends GenericFilterBean {
         String prefix = "Bearer ";
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(prefix)) {
             return bearerToken.substring(prefix.length());
-        } else {
-            return null;
         }
+        return null;
     }
 }
 

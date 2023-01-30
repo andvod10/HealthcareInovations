@@ -22,11 +22,11 @@ public abstract class AbstractAuditable<U> {
 
     @CreatedBy
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "created_by")
+    @JoinColumn(name = "created_by", unique = true, updatable = false)
     private U createdBy;
 
     @CreatedDate
-    @Column(name = "created_date")
+    @Column(name = "created_date", updatable = false)
     private LocalDateTime createdDate;
 
     @LastModifiedBy

@@ -10,34 +10,34 @@ import static com.avinty.hr.service.employees.util.CustomDateTimeFormatter.forma
 
 public class EmployeeMapper {
     public static Employee toSaveAdminEntity(RqEmployee rqEmployee, String password) {
-        return Employee.builder()
-                .email(rqEmployee.getEmail())
-                .password(password)
-                .fullName(rqEmployee.getFullName())
-                .accountRole(AccountRoles.ROLE_ADMIN)
-                .build();
+        var employee = new Employee();
+        employee.setEmail(rqEmployee.getEmail());
+        employee.setPassword(password);
+        employee.setFullName(rqEmployee.getFullName());
+        employee.setAccountRole(AccountRoles.ROLE_ADMIN);
+        return employee;
     }
 
     public static Employee toSaveEmployeeEntity(RqEmployee rqEmployee, String password, Department department) {
-        return Employee.builder()
-                .email(rqEmployee.getEmail())
-                .password(password)
-                .fullName(rqEmployee.getFullName())
-                .department(department)
-                .accountRole(AccountRoles.ROLE_USER)
-                .build();
+        var employee = new Employee();
+        employee.setEmail(rqEmployee.getEmail());
+        employee.setPassword(password);
+        employee.setFullName(rqEmployee.getFullName());
+        employee.setDepartment(department);
+        employee.setAccountRole(AccountRoles.ROLE_USER);
+        return employee;
     }
 
     public static RsEmployee toResponse(Employee employee) {
         return new RsEmployee(
-            employee.getId().toString(),
-            employee.getCreatedBy() != null ? employee.getCreatedBy().getId().toString() : null,
-            formatDateTime(employee.getCreatedDate()),
-            employee.getLastModifiedBy() != null ? employee.getLastModifiedBy().getId().toString() : null,
-            formatDateTime(employee.getLastModifiedDate()),
-            employee.getEmail(),
-            employee.getFullName(),
-            employee.getDepartment() != null ? employee.getDepartment().getId().toString() : null
+                employee.getId(),
+                employee.getCreatedBy() != null ? employee.getCreatedBy().getId() : null,
+                formatDateTime(employee.getCreatedDate()),
+                employee.getLastModifiedBy() != null ? employee.getLastModifiedBy().getId() : null,
+                formatDateTime(employee.getLastModifiedDate()),
+                employee.getEmail(),
+                employee.getFullName(),
+                employee.getDepartment() != null ? employee.getDepartment().getId() : null
         );
     }
 }
