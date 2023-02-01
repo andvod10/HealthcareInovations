@@ -53,7 +53,7 @@ public class DepartmentServiceTest {
 
     @Test
     void addDepartmentTest() {
-        Optional<Department> optionalDepartment = this.departmentRepository.findByIdFetchAll(departmentId);
+        Optional<Department> optionalDepartment = this.departmentRepository.findByIdFetch(departmentId);
         assertThat(optionalDepartment.isPresent()).isTrue();
         Department department = optionalDepartment.get();
 

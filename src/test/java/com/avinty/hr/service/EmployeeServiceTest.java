@@ -127,14 +127,14 @@ public class EmployeeServiceTest {
                 .managerId(adminId)
                 .build();
         departmentId = this.departmentService.addDepartment(rqDepartment);
-        Optional<Department> optionalDepartment = this.departmentRepository.findByIdFetchAll(departmentId);
+        Optional<Department> optionalDepartment = this.departmentRepository.findByIdFetch(departmentId);
         assertThat(optionalDepartment.isPresent()).isTrue();
         Department department = optionalDepartment.get();
         assertThat(department.getEmployees()).isEmpty();
 
         this.employeesService.changeDepartment(employeeId, departmentId);
 
-        Optional<Department> optionalDepartmentUpdated = this.departmentRepository.findByIdFetchAll(departmentId);
+        Optional<Department> optionalDepartmentUpdated = this.departmentRepository.findByIdFetch(departmentId);
         assertThat(optionalDepartmentUpdated.isPresent()).isTrue();
         Department departmentUpdated = optionalDepartmentUpdated.get();
         assertThat(departmentUpdated.getEmployees().size()).isEqualTo(1);

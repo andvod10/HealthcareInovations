@@ -1,6 +1,7 @@
 package com.avinty.hr.data.entity;
 
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +14,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = false)
+@Setter
+@Getter
 @Entity
 @Table(name = "department")
 public class Department extends BaseEntity {

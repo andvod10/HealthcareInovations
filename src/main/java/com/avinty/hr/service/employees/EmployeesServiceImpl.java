@@ -86,8 +86,11 @@ public non-sealed class EmployeesServiceImpl implements EmployeesService {
     public void changeDepartment(String employeeId, String departmentId) {
         Employee employee = this.employeeRepository.findByIdFetch(employeeId)
                 .orElseThrow(() -> new EntityNotFoundException(employeeId));
-        Department department = this.departmentRepository.findById(departmentId)
+        Department department = this.departmentRepository.findByIdFetch(departmentId)
                 .orElseThrow(() -> new EntityNotFoundException(departmentId));
+        if (employee.getDepartment() != null) {
+            employee.getDepartment().removeEmployee(employee);
+        }
         department.addEmployee(employee);
     }
 
