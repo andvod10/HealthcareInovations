@@ -1,7 +1,7 @@
 package com.avinty.hr.data.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,16 +14,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Setter
-@Getter
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Entity
 @Table(name = "department")
 public class Department extends BaseEntity {
     @Column(name = "name")
     private String name;
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @JoinColumn(name = "manager_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Employee manager;
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "department")
     private List<Employee> employees = new ArrayList<>();
 

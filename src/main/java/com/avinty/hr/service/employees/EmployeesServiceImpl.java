@@ -10,6 +10,7 @@ import com.avinty.hr.data.repository.EmployeeRepository;
 import com.avinty.hr.presentation.dto.RqEmployee;
 import com.avinty.hr.presentation.dto.RsEmployee;
 import com.avinty.hr.presentation.dto.RsEmployeeInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +21,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 public non-sealed class EmployeesServiceImpl implements EmployeesService {
@@ -92,6 +94,8 @@ public non-sealed class EmployeesServiceImpl implements EmployeesService {
             employee.getDepartment().removeEmployee(employee);
         }
         department.addEmployee(employee);
+        log.info("Employee: {}", employee);
+        log.info("Department: {}", department);
     }
 
     private void validate(RqEmployee rqEmployee) {
