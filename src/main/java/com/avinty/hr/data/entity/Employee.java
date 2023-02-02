@@ -3,6 +3,7 @@ package com.avinty.hr.data.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,7 +16,8 @@ import javax.persistence.Table;
 @ToString(callSuper = true)
 @Data
 @Entity
-@Table(name = "employees")
+@DynamicUpdate
+@Table(name = "employee")
 public class Employee extends BaseEntity {
     @Column(name = "email", unique = true)
     private String email;
