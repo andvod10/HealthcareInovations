@@ -3,7 +3,7 @@ package com.avinty.hr.presentation.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 @Getter
 @Setter

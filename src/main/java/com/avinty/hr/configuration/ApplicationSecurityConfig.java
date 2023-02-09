@@ -42,7 +42,7 @@ class ApplicationSecurityConfig {
                 .csrf().disable()
                 .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> {
-                    authorize.antMatchers(AUTH_REQUESTS).permitAll();
+                    authorize.requestMatchers(AUTH_REQUESTS).permitAll();
                     authorize.anyRequest().authenticated();
                 })
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
